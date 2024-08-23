@@ -48,7 +48,7 @@ class EthClient:
             }
         }
 
-        with open('../utils/tokens.json') as file:
+        with open('backend/schemas/tokens.json') as file:
             token_contracts = json.load(file)
 
         # Получение балансов токенов
@@ -76,7 +76,6 @@ class EthClient:
         url = f"https://api.etherscan.io/api?module=account&action=txlist&address={self.address}&sort=desc&apikey={API}"
     
         response = requests.get(url).json()
-        
 
         # Get transactions and total count
         result = response['result']

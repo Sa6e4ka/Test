@@ -1,0 +1,138 @@
+.mnemo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Полная высота окна */
+  width: 100vw; /* Полная ширина окна */
+  background: linear-gradient(
+    135deg,
+    #6a11cb 0%,
+    #2575fc 100%
+  ); /* Градиентный фон */
+  color: white; /* Цвет текста */
+  text-align: center; /* Центрирование текста */
+}
+
+.mnemo-container h3 {
+  font-size: 3rem; /* Увеличенный размер шрифта */
+  margin-bottom: 20px; /* Отступ снизу */
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5); /* Тень текста */
+  font-family: "Roboto", sans-serif; /* Применение нового шрифта */
+}
+
+.mnemo-container button {
+  padding: 15px 30px; /* Увеличенный отступ */
+  margin: 10px; /* Отступ между кнопками */
+  margin-top: 40px;
+  font-size: 1.2rem; /* Увеличенный размер шрифта */
+  color: white; /* Цвет текста */
+  background-color: #007bff; /* Цвет кнопки */
+  border: none;
+  border-radius: 10px; /* Скругление углов */
+  cursor: pointer; /* Указатель при наведении */
+  transition: background-color 0.3s, transform 0.2s; /* Плавный переход цвета и масштаба */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Тень кнопки */
+}
+
+.mnemo-container button:hover {
+  background-color: #0056b3; /*к Цвет нопки при наведении */
+  transform: scale(1.05); /* Увеличение кнопки при наведении */
+}
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 100px; /* Размер квадрата */
+  height: 50px;
+  margin: 0 10px; /* Отступы между текстом и свитчером */
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 12px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 50px; /* Размер квадрата */
+  width: 50px; /* Размер квадрата */
+  left: 0;
+  bottom: 0;
+  background-color: white;
+  transition: 0.5s;
+  border-radius: 12px;
+}
+
+.slider:hover {
+  transform: scale(1.1);
+}
+
+input:checked + .slider:before {
+  transform: translateX(50px); /* Движение квадрата */
+}
+
+.switch-label {
+  margin: 20px;
+  font-size: 18px;
+  color: white;
+  font-weight: bold;
+  transition: transform 0.4s;
+}
+
+.switch-label:hover {
+  transform: scale(1.1);
+}
+
+.mnemonic-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.mnemonic-input {
+  width: 125px; /* Ширина инпута */
+  padding: 10px; /* Внутренние отступы */
+  margin: 10px 0; /* Отступы сверху и снизу */
+  margin-right: 10px;
+  border-radius: 8px; /* Скругление углов */
+  border: 2px solid rgba(255, 255, 255, 0.5); /* Полупрозрачная граница */
+  background-color: rgba(255, 255, 255, 0.5); /* Полупрозрачный фон */
+  color: white; /* Цвет текста */
+  font-size: 1.2rem; /* Размер шрифта */
+  font-family: "Roboto", sans-serif; /* Применение шрифта */
+  text-align: center; /* Выравнивание текста по центру */
+  outline: none; /* Убираем стандартное обрамление при фокусе */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Тень инпута */
+  transition: border-color 0.3s, background-color 0.3s, transform 0.4s; /* Плавные переходы для границы и фона */
+}
+
+.mnemonic-input:hover {
+  transform: scale(1.1);
+}
+
+.error-message {
+  color: rgb(255, 255, 255);
+  font-family: "Roboto", sans-serif;
+  margin-top: 10px;
+}

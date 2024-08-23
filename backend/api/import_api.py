@@ -13,6 +13,5 @@ def import_wallet_p(data: SImportWallet):
 
     return ImportWalletResponse(
         address=result[0]["address"],
-        transactions=result[0]["transactions"],
         private_key=f"{result[0]["private_key"]}",
     )
