@@ -3,41 +3,48 @@ import "./WalletInfo.css";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
+import QRCode from "qrcode.react"; // Импортируйте QRCode
 
 const TransactionsInfo = ({ walletData }) => {
-  const [startIndex, setStartIndex] = useState(0); // State for tracking pagination
-  const [totalTransactions, setTotalTransactions] = useState(0); // Track total transactions
+  const [startIndex, setStartIndex] = useState(0);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null);
-  const [hasFetched, setHasFetched] = useState(false); // State to track if transactions have been fetched
+  const [hasFetched, setHasFetched] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
 
-  const itemsPerPage = 3; // Number of transactions per page
+  const itemsPerPage = 3;
 
   const requestTransactions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/transactions/${walletData.address}&${startIndex}`
+        `http://localhost:8001/transactions/${walletData.address}&${startIndex}`
       );
       const data = response.data;
-      setTransactions(data.transactions); // Save transactions to state
-      setTotalTransactions(data.totalTransactions || 0); // Save total transactions count
-      console.log(data); // Log transactions to console
-      if (data.transactions.length === 0) {
+      setTransactions(data);
+      setTotalTransactions(data.length > 0 ? data[0].total : 0);
+      console.log(data);
+      if (data.length === 0) {
         setError("No transactions found");
       }
     } catch (error) {
-      setError("Error getting your transactions. Please try again.");
+      setError("No transactions found");
     } finally {
-      setHasFetched(true); // Set hasFetched to true after fetching is done
+      setHasFetched(true);
     }
   };
 
-  const handleFetchTransactions = () => {
-    if (walletData && walletData.address) {
-      setHasFetched(false); // Reset hasFetched when fetching new data
+  // Fetch transactions when the component mounts
+  useEffect(() => {
+    requestTransactions();
+  }, []); // Пустой массив зависимостей, чтобы вызвать только один раз при монтировании
+
+  // Fetch transactions when startIndex changes
+  useEffect(() => {
+    if (hasFetched) {
       requestTransactions();
     }
-  };
+  }, [startIndex]);
 
   const handleNextPage = () => {
     if (startIndex + itemsPerPage < totalTransactions) {
@@ -49,22 +56,26 @@ const TransactionsInfo = ({ walletData }) => {
     setStartIndex((prevIndex) => Math.max(prevIndex - itemsPerPage, 0));
   };
 
-  useEffect(() => {
-    handleFetchTransactions();
-  }, [startIndex]); // Re-fetch transactions when startIndex changes
+  const handleTransactionClick = (transaction) => {
+    setSelectedTransaction(transaction);
+  };
 
-  const totalPages = Math.ceil(totalTransactions / itemsPerPage); // Calculate total pages
+  const closeModal = () => {
+    setSelectedTransaction(null);
+  };
+
+  const handleModalClick = (e) => {
+    if (e.target.classList.contains("modal")) {
+      closeModal();
+    }
+  };
+
+  const totalPages = Math.ceil(totalTransactions / itemsPerPage);
 
   return (
     <div className="TransactionsContainer">
-      <button
-        className="fetch-transactions-button"
-        onClick={() => handleFetchTransactions()}
-      >
-        Show Transactions
-      </button>
-
       {/* Pagination Controls */}
+      <h2>Transactions History</h2>
       <div className="pagination-controls">
         <button onClick={handlePreviousPage} disabled={startIndex === 0}>
           Previous
@@ -82,16 +93,35 @@ const TransactionsInfo = ({ walletData }) => {
 
       {/* Display Transactions */}
       <div className="transactions-list">
-        {hasFetched && transactions.length === 0 && (
-          <p>{error}</p> /* Если нет транзакций */
-        )}
+        {hasFetched && transactions.length === 0 && <p>{error}</p>}
         {transactions.length > 0 &&
           transactions.map((transaction, index) => (
-            <div key={index} className="transaction-item">
-              <p>{transaction}</p> {/* Render transaction hash */}
+            <div
+              key={index}
+              className="transaction-item"
+              onClick={() => handleTransactionClick(transaction)}
+            >
+              <p>{transaction.hash}</p>
             </div>
           ))}
       </div>
+
+      {/* Modal for transaction details */}
+      {selectedTransaction && (
+        <div className="modal" onClick={handleModalClick}>
+          <div className="modal-content">
+            <span className="close" onClick={closeModal}>
+              &times;
+            </span>
+            <h1>Transaction Details</h1>
+            <p>Hash: {selectedTransaction.hash}</p>
+            <p>From: {selectedTransaction.from}</p>
+            <p>To: {selectedTransaction.to}</p>
+            <p>Value: {selectedTransaction.value}</p>
+            <p>Gas: {selectedTransaction.gas}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -262,8 +292,13 @@ const App = () => {
         <WalletInfo walletData={walletData} />
         <TransactionsInfo walletData={walletData} />
       </div>
-
       {walletData && <CheckBalance address={walletData.address} />}
+      <div className="qr-code-container">
+        {walletData && (
+          <QRCode className="QR" value={walletData.address} size={256} />
+        )}
+        <p>Address QR</p>
+      </div>
     </div>
   );
 };
